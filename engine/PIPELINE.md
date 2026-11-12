@@ -34,6 +34,12 @@ Pour chaque image `X.jpg` dans `engine/app/` : version 1600 px de large `X.jpg`,
 
 Voix : un morceau par piste (donc 4 morceaux), chacun ≤ 500 octets UTF-8 sur le forfait gratuit. Les nombres sont écrits en lettres dans le texte envoyé à la voix.
 
+## Insultes (choix de Duca, 12/11)
+
+Vraiment vulgaires, lâchées l'air de rien au milieu des phrases, adressées au public, 6 à 8 par vidéo, varier d'un jour à l'autre :
+bande de connards · sales connasses · bande de bâtards · gros cons · petites merdes · tas de merde · trous du cul · branleurs · ducons · sacs à merde · gros débiles de merde · enfoirés.
+À éviter : les insultes « mignonnes » ou bizarres (crétins, culs plats, bites en bois, flans tièdes) et tout ce qui vise une origine, une religion, un handicap, une orientation, le genre ou le travail du sexe (pas de « pute », « salope », « pédé », « enculé »), ni la famille (« fils de… »). TikTok sanctionne ces mots-là bien plus que les autres.
+
 ## 4. Voix (Fish Audio)
 
 - Vérifier d'abord `get_credit_balance`. Il faut environ 1 400 crédits. S'il en manque : ne rien publier, prévenir Duca.
