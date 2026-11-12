@@ -40,14 +40,15 @@ Vraiment vulgaires, lâchées l'air de rien au milieu des phrases, adressées au
 bande de connards · sales connasses · bande de bâtards · gros cons · petites merdes · tas de merde · trous du cul · branleurs · ducons · sacs à merde · gros débiles de merde · enfoirés.
 À éviter : les insultes « mignonnes » ou bizarres (crétins, culs plats, bites en bois, flans tièdes) et tout ce qui vise une origine, une religion, un handicap, une orientation, le genre ou le travail du sexe (pas de « pute », « salope », « pédé », « enculé »), ni la famille (« fils de… »). TikTok sanctionne ces mots-là bien plus que les autres.
 
-## 4. Voix (Fish Audio)
+## 4. Voix (Fish Audio, modèle gratuit)
 
-- Vérifier d'abord `get_credit_balance`. Il faut environ 1 400 crédits. S'il en manque : ne rien publier, prévenir Duca.
-- `text_to_speech` × 4, `voice_id = bdfbdcb27253419ba7e0746af7a154f8` (Clémence), `model = drama-3`. Ton **détendu et amusé, comme entre potes** (depuis le 12/11, l'ancien ton surexcité était jugé trop énervant) : chaque morceau commence par `[casual, amused, relaxed, like talking to friends]` ; seulement `[laughing]` ou `[sarcastic]` ponctuellement. Jamais `[screaming]`, `[shouting]` ni `[hyper excited]`.
-- Ne jamais relancer une génération pour un même texte (ça recharge des crédits) : retélécharger `audio_url`.
+- Voix gratuite par l'API Fish Audio, modèle `s2.1-pro-free`, voix Clémence. La clé API est donnée dans le message de la tâche planifiée (variable `FISH_API_KEY`) : ne jamais l'écrire dans un fichier du dépôt, il est public.
+- Écrire les 4 morceaux dans `$WORK/part1.txt` … `part4.txt` (un par piste). Ton **détendu et amusé, comme entre potes** : chaque morceau commence par `[casual, amused, relaxed]` ; seulement `[laughing]` ou `[sarcastic]` ponctuellement. Jamais `[screaming]`, `[shouting]` ni `[hyper excited]`.
+- `cd $WORK && FISH_API_KEY=... python3 $W/tts_free.py part1.txt part2.txt part3.txt part4.txt` → `p1.mp3` … `p4.mp3`.
+- Si l'API refuse (401, 402, 403 : fin de l'offre gratuite, clé invalide), solution de secours : le connecteur Fish Audio (`text_to_speech`, même voix, `model = drama-3`), mais seulement si `get_credit_balance` montre au moins 1 400 crédits ; sinon ne rien publier et prévenir Duca. Avec le connecteur, ne jamais relancer une génération pour un même texte : retélécharger `audio_url`.
 
 ```bash
-cd $WORK; i=0; for URL in <4 audio_url>; do i=$((i+1)); curl -sS -o p$i.mp3 "$URL"; ffmpeg -y -loglevel error -i p$i.mp3 -af "atempo=1.1,aresample=48000" -ac 1 f$i.wav; done
+cd $WORK; for i in 1 2 3 4; do ffmpeg -y -loglevel error -i p$i.mp3 -af "atempo=1.1,aresample=48000" -ac 1 f$i.wav; done
 ffmpeg -y -loglevel error -f lavfi -i anullsrc=r=48000:cl=mono -t 0.35 gap.wav
 printf "file f1.wav\nfile gap.wav\nfile f2.wav\nfile gap.wav\nfile f3.wav\nfile gap.wav\nfile f4.wav\n" > l.txt
 ffmpeg -y -loglevel error -f concat -i l.txt -c pcm_s16le voice.wav
