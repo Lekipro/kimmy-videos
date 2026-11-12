@@ -5,8 +5,6 @@ import subprocess,re,json,sys,os
 D=os.path.join(os.path.dirname(os.path.abspath(__file__)),'sfx')
 d=json.load(open(sys.argv[1]));L=d['lines'];T=d['tracks']
 ev=[];k=0
-for l in L[:-1]:
-    if l.get('instant'): ev.append((l['end'],['bonk.wav','boing.mp3'][k%2],-14 if k%2==0 else -15)); k+=1
 for t in T[1:]: ev.append((t['start']-0.25,'whoosh.wav',-17))
 KW=[('live','ding.mp3',-16,'start',-0.1),('abonn','ding.mp3',-16,'end',-0.3),('arrêt','police.wav',-19,'end',-0.6),
     ('chie','fart.wav',-13,'end',-0.1),('caméra','shutter.mp3',-15,'end',-0.3),('urgence','ambulance.wav',-22,'start',0.4),

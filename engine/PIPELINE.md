@@ -29,7 +29,7 @@ Pour chaque image `X.jpg` dans `engine/app/` : version 1600 px de large `X.jpg`,
 Éditer `engine/app/build_data.py` :
 - `T` : 4 pistes. Piste 0 = l'ouverture : elle montre **l'image de l'info n° 1** (`img`, `credit`, `pos` de l'info n° 1) avec `headline`, un titre choc de 3 ou 4 mots affiché en très gros dès la première image (ex. « Il chie au lycée »), et garde `intro=1`. Pistes 1-3 = infos n° 3, 2, 1 avec `title` (2 mots), `img`, `credit`, `pos`.
 - Écran épuré (depuis le 12/11, après 35 % de départ à 1 s) : une photo, une seule ligne de texte à la fois, rien d'important au-dessus de y=260, sous y=1480 ni à droite de x=950 (zones cachées par TikTok). Ne pas rajouter d'éléments à l'écran.
-- `L` : les lignes affichées `(piste, texte, flags)`. Flags : `shout` (rouge, tremblement), `stamp` (étiquette rouge), `instant` (étiquette dès le début de la ligne, pour les insultes), `hook`, `switch`, `outro` (les 2 dernières lignes).
+- `L` : les lignes affichées `(piste, texte, flags)`. Flags : `stamp` (étiquette rouge, réservée aux faits marquants : chiffres, « 6 ANS », « ARRÊTÉ »), `hook`, `switch`, `outro` (les 2 dernières lignes). **Les insultes sont du texte normal** : pas d'étiquette, pas d'effet, pas de bruitage (depuis le 12/11 : Kimmy insulte naturellement, ce n'est pas un événement).
 - Le texte des lignes doit suivre exactement ce que dit la voix, chiffres écrits en chiffres.
 
 Voix : un morceau par piste (donc 4 morceaux), chacun ≤ 500 octets UTF-8 sur le forfait gratuit. Les nombres sont écrits en lettres dans le texte envoyé à la voix.
@@ -37,11 +37,11 @@ Voix : un morceau par piste (donc 4 morceaux), chacun ≤ 500 octets UTF-8 sur l
 ## 4. Voix (Fish Audio)
 
 - Vérifier d'abord `get_credit_balance`. Il faut environ 1 400 crédits. S'il en manque : ne rien publier, prévenir Duca.
-- `text_to_speech` × 4, `voice_id = bdfbdcb27253419ba7e0746af7a154f8` (Clémence), `model = drama-3`, balises en anglais : `[screaming with excitement, very fast]` pour l'ouverture, `[hyper excited, fast]`, `[laughing]`, `[whispering]`, `[shouting]`.
+- `text_to_speech` × 4, `voice_id = bdfbdcb27253419ba7e0746af7a154f8` (Clémence), `model = drama-3`. Ton **détendu et amusé, comme entre potes** (depuis le 12/11, l'ancien ton surexcité était jugé trop énervant) : chaque morceau commence par `[casual, amused, relaxed, like talking to friends]` ; seulement `[laughing]` ou `[sarcastic]` ponctuellement. Jamais `[screaming]`, `[shouting]` ni `[hyper excited]`.
 - Ne jamais relancer une génération pour un même texte (ça recharge des crédits) : retélécharger `audio_url`.
 
 ```bash
-cd $WORK; i=0; for URL in <4 audio_url>; do i=$((i+1)); curl -sS -o p$i.mp3 "$URL"; ffmpeg -y -loglevel error -i p$i.mp3 -af "atempo=1.15,aresample=48000" -ac 1 f$i.wav; done
+cd $WORK; i=0; for URL in <4 audio_url>; do i=$((i+1)); curl -sS -o p$i.mp3 "$URL"; ffmpeg -y -loglevel error -i p$i.mp3 -af "atempo=1.1,aresample=48000" -ac 1 f$i.wav; done
 ffmpeg -y -loglevel error -f lavfi -i anullsrc=r=48000:cl=mono -t 0.35 gap.wav
 printf "file f1.wav\nfile gap.wav\nfile f2.wav\nfile gap.wav\nfile f3.wav\nfile gap.wav\nfile f4.wav\n" > l.txt
 ffmpeg -y -loglevel error -f concat -i l.txt -c pcm_s16le voice.wav
