@@ -1,1 +1,3 @@
 engine/app/data.json
+engine/app/*.jpg
+!engine/app/kimmy*.jpg

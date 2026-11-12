@@ -27,7 +27,8 @@ Pour chaque image `X.jpg` dans `engine/app/` : version 1600 px de large `X.jpg`,
 ## 3. Script et lignes
 
 Éditer `engine/app/build_data.py` :
-- `T` : 4 pistes. Piste 0 = intro Kimmy (inchangée). Pistes 1-3 = infos n° 3, 2, 1 avec `title` (2 mots), `place`, `img`, `credit`, `pos`.
+- `T` : 4 pistes. Piste 0 = l'ouverture : elle montre **l'image de l'info n° 1** (`img`, `credit`, `pos` de l'info n° 1) avec `headline`, un titre choc de 3 ou 4 mots affiché en très gros dès la première image (ex. « Il chie au lycée »), et garde `intro=1`. Pistes 1-3 = infos n° 3, 2, 1 avec `title` (2 mots), `img`, `credit`, `pos`.
+- Écran épuré (depuis le 12/11, après 35 % de départ à 1 s) : une photo, une seule ligne de texte à la fois, rien d'important au-dessus de y=260, sous y=1480 ni à droite de x=950 (zones cachées par TikTok). Ne pas rajouter d'éléments à l'écran.
 - `L` : les lignes affichées `(piste, texte, flags)`. Flags : `shout` (rouge, tremblement), `stamp` (étiquette rouge), `instant` (étiquette dès le début de la ligne, pour les insultes), `hook`, `switch`, `outro` (les 2 dernières lignes).
 - Le texte des lignes doit suivre exactement ce que dit la voix, chiffres écrits en chiffres.
 

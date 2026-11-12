@@ -1,6 +1,6 @@
 # Builds data.json. With no timings file, estimates timings from text length (preview mode).
 import json,sys,re
-T=[dict(n="★",title="Le Top 3 du jour",place="Kimmy · Infos débiles",img="kimmy",credit="",pos="50% 22%",intro=1),
+T=[dict(n="★",title="Le Top 3 du jour",img="lycee",credit="Photo : 'lectric eye / CC BY-SA 4.0",pos="52% 50%",intro=1,headline="Il chie au lycée"),
    dict(n=3,title="Pilleur en live",place="Nantes · France",img="nantes",credit="Photo : Chabe01 / CC BY-SA 4.0",pos="50% 55%"),
    dict(n=2,title="Papa Pokémon",place="Charleston · États-Unis",img="target",credit="Photo d'illustration : Winnebaggo / CC0",pos="72% 50%"),
    dict(n=1,title="Mauvais perdant",place="Michigan · États-Unis",img="lycee",credit="Photo : 'lectric eye / CC BY-SA 4.0",pos="52% 50%")]
