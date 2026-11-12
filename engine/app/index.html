@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#0b0b0d;font-family:"Inter Display","Inter",sans-serif;color:#fff;-webkit-font-smoothing:antialiased}
+#stage{position:absolute;inset:0;overflow:hidden}
+.bg{position:absolute;left:-90px;top:-90px;width:1260px;height:2100px;background-size:cover;background-position:center;will-change:transform,opacity}
+#veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,8,10,.30) 0%,rgba(8,8,10,.10) 30%,rgba(8,8,10,.55) 62%,rgba(8,8,10,.86) 100%)}
+#flash{position:absolute;inset:0;background:#ff2d2d;opacity:0;mix-blend-mode:screen}
+/* hero */
+#heroWrap{position:absolute;left:60px;top:150px;width:960px;height:700px}
+.hero{position:absolute;inset:0;border-radius:46px;overflow:hidden;box-shadow:0 40px 90px rgba(0,0,0,.55),0 0 0 1.5px rgba(255,255,255,.10) inset;will-change:transform;background:#111}
+.hero .ph{position:absolute;inset:-6%;background-size:cover;will-change:transform}
+.hero .shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.28) 0%,rgba(0,0,0,0) 26%,rgba(0,0,0,0) 62%,rgba(0,0,0,.55) 100%)}
+.hero .credit{position:absolute;right:26px;bottom:20px;font:500 19px "Inter";color:rgba(255,255,255,.62);letter-spacing:.2px}
+.pill{position:absolute;top:26px;height:64px;border-radius:32px;padding:0 26px;display:flex;align-items:center;font:700 28px "Inter Display";background:rgba(12,12,14,.62);border:1.5px solid rgba(255,255,255,.14)}
+#num{left:86px;top:176px;padding:0 24px 0 22px;gap:8px;z-index:5}
+#num .lab{color:rgba(255,255,255,.6);font-weight:600}
+#roll{height:64px;overflow:hidden;width:24px}
+#rollIn div{height:64px;font:800 34px/64px "Inter Display";color:#ff3b3b;text-align:center}
+#place{right:86px;top:176px;z-index:5;font-weight:600;font-size:25px;color:rgba(255,255,255,.9);white-space:nowrap}
+#stamp{position:absolute;left:110px;top:640px;z-index:6;transform-origin:left center;font:800 62px "Inter Display";letter-spacing:-1px;padding:14px 30px 16px;border-radius:22px;background:#ff3b3b;color:#fff;box-shadow:0 18px 40px rgba(255,40,40,.35);white-space:nowrap;opacity:0}
+/* title block */
+#meta{position:absolute;left:66px;top:892px;width:900px;height:130px}
+#ava{position:absolute;left:0;top:10px;width:104px;height:104px;border-radius:26px;background:url(kimmy_ava.jpg) center/cover;box-shadow:0 14px 30px rgba(255,90,160,.35),0 0 0 2px rgba(255,255,255,.18) inset}
+#titles{position:absolute;left:130px;top:6px;width:780px;height:70px;overflow:hidden}
+.ttl{position:absolute;left:0;top:0;font:800 58px "Inter Display";letter-spacing:-1.4px;white-space:nowrap;line-height:70px}
+.ttl span{display:inline-block;will-change:transform,opacity}
+#sub{position:absolute;left:132px;top:78px;font:500 30px "Inter";color:rgba(255,255,255,.58);letter-spacing:-.2px}
+/* lyrics */
+#lyr{position:absolute;left:66px;top:1056px;width:850px;height:420px;overflow:hidden;-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 13%,#000 74%,transparent 100%)}
+#lyrIn{position:absolute;left:0;top:0;width:850px;will-change:transform}
+.ln{font:800 60px/1.13 "Inter Display";letter-spacing:-1.6px;padding:12px 0 14px;transform-origin:left center;will-change:transform,opacity,filter}
+.ln.hook{font-size:64px}
+.ln span{display:inline-block;white-space:pre;will-change:transform}
+/* player */
+#player{position:absolute;left:60px;top:1492px;width:862px;height:132px;border-radius:38px;background:rgba(255,255,255,.115);border:1.5px solid rgba(255,255,255,.13);box-shadow:0 24px 50px rgba(0,0,0,.35)}
+#mini{position:absolute;left:16px;top:16px;width:100px;height:100px;border-radius:24px;overflow:hidden;background:#222}
+#mini div{position:absolute;inset:0;background-size:cover;background-position:center}
+#pTitle{position:absolute;left:136px;top:20px;font:700 31px "Inter Display";letter-spacing:-.5px;white-space:nowrap}
+#pSub{position:absolute;left:136px;top:60px;font:500 24px "Inter";color:rgba(255,255,255,.58)}
+#eq{position:absolute;right:30px;top:26px;width:62px;height:44px;display:flex;align-items:flex-end;gap:6px}
+#eq i{display:block;width:8px;border-radius:4px;background:#ff3b3b;height:10px}
+#bar{position:absolute;left:136px;right:30px;top:102px;height:7px;border-radius:4px;background:rgba(255,255,255,.2)}
+#fill{position:absolute;left:0;top:0;height:7px;border-radius:4px;background:#fff;width:0}
+#knob{position:absolute;top:-6px;width:19px;height:19px;border-radius:50%;background:#fff;margin-left:-9px;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+#tm{position:absolute;right:112px;top:38px;font:600 23px "Inter";color:rgba(255,255,255,.55);font-variant-numeric:tabular-nums}
+/* outro */
+#outro{position:absolute;left:60px;top:150px;width:960px;height:700px}
+.oc{position:absolute;top:60px;width:296px;height:520px;border-radius:38px;overflow:hidden;box-shadow:0 30px 70px rgba(0,0,0,.55);opacity:0;will-change:transform,opacity}
+.oc div.im{position:absolute;inset:0;background-size:cover}
+.oc .sh{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(0,0,0,.82) 100%)}
+.oc .nb{position:absolute;left:22px;top:18px;font:800 96px "Inter Display";letter-spacing:-3px;color:#fff;text-shadow:0 6px 24px rgba(0,0,0,.6)}
+.oc .tt{position:absolute;left:22px;right:14px;bottom:24px;font:800 34px/1.05 "Inter Display";letter-spacing:-.8px}
+</style></head><body>
+<div id="stage">
+  <div id="bgs"></div><div id="veil"></div><div id="flash"></div>
+  <div id="heroWrap"></div>
+  <div id="outro"></div>
+  <div class="pill" id="num"><span class="lab">N°</span><div id="roll"><div id="rollIn"></div></div></div>
+  <div class="pill" id="place"></div>
+  <div id="stamp"></div>
+  <div id="meta"><div id="ava"></div><div id="titles"></div><div id="sub">Kimmy — Top 3 des infos débiles</div></div>
+  <div id="lyr"><div id="lyrIn"></div></div>
+  <div id="player"><div id="mini"></div><div id="pTitle"></div><div id="pSub">Kimmy</div><div id="tm"></div>
+    <div id="eq"><i></i><i></i><i></i><i></i><i></i></div><div id="bar"><div id="fill"></div><div id="knob"></div></div></div>
+</div>
+<script>
+const $=s=>document.querySelector(s), cl=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
+const ss=x=>{x=cl(x);return x*x*(3-2*x)}, eo=x=>1-Math.pow(1-cl(x),3), eio=x=>{x=cl(x);return x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2};
+const back=x=>{x=cl(x);const c=1.70158,c3=c+1;return 1+c3*Math.pow(x-1,3)+c*Math.pow(x-1,2)};
+const spring=x=>{x=cl(x);return 1-Math.exp(-6.5*x)*Math.cos(9*x)};   // overshooting settle
+const mix=(a,b,k)=>a+(b-a)*k;
+let D,els={};
+async function init(){
+  D=await (await fetch('data.json')).json();
+  D.tracks.forEach((t,i)=>{
+    const b=document.createElement('div');b.className='bg';b.style.backgroundImage=`url(${t.img}_bg.jpg)`;$('#bgs').appendChild(b);t.bg=b;
+    const h=document.createElement('div');h.className='hero';h.innerHTML=`<div class="ph" style="background-image:url(${t.img}.jpg);background-position:${t.pos}"></div><div class="shade"></div><div class="credit">${t.credit}</div>`;$('#heroWrap').appendChild(h);t.hero=h;t.ph=h.firstChild;
+    const r=document.createElement('div');r.textContent=t.n;$('#rollIn').appendChild(r);
+    const tt=document.createElement('div');tt.className='ttl';tt.innerHTML=[...t.title].map(c=>`<span>${c==' '?'&nbsp;':c}</span>`).join('');$('#titles').appendChild(tt);t.ttl=tt;
+    const m=document.createElement('div');m.style.backgroundImage=`url(${t.img}.jpg)`;m.style.backgroundPosition=t.pos;$('#mini').appendChild(m);t.mini=m;
+    if(t.intro){t.oc=document.createElement('div');}else{const o=document.createElement('div');o.className='oc';o.style.left=((i-1)*332)+'px';o.innerHTML=`<div class="im" style="background-image:url(${t.img}.jpg);background-position:${t.pos}"></div><div class="sh"></div><div class="nb">${t.n}</div><div class="tt">${t.title}</div>`;$('#outro').appendChild(o);t.oc=o;}
+  });
+  D.lines.forEach(l=>{const d=document.createElement('div');d.className='ln'+(l.hook?' hook':'');
+    d.innerHTML=l.words.map((w,i)=>`<span>${w.w}${i<l.words.length-1?' ':''}</span>`).join('');$('#lyrIn').appendChild(d);l.el=d;l.sp=[...d.children];});
+  await document.fonts.ready;
+  D.lines.forEach(l=>{l.y=l.el.offsetTop;l.h=l.el.offsetHeight});
+  D.outroStart=(D.lines.find(l=>l.outro)||{start:1e9}).start;
+  window.ready=true;
+}
+function noise(t,s){return Math.sin(t*37.1+s)*.6+Math.sin(t*61.7+s*2.3)*.4}
+window.setTime=function(t){
+  const T=D.tracks,L=D.lines;
+  // current track + transition
+  let ci=0;T.forEach((k,i)=>{if(t>=k.start)ci=i});
+  const TR=.75, p=ci>0?cl((t-T[ci].start)/TR):1;   // transition progress into track ci
+  // shout energy
+  let sh=0;L.forEach(l=>{if(l.shout&&t>=l.start-.03&&t<l.end+.35){sh=Math.max(sh,1-cl((t-l.start)/(l.end-l.start+.35))*.75)}});
+  const out=cl((t-D.outroStart)/.6);
+  // backgrounds
+  T.forEach((k,i)=>{let o=0;if(i==ci)o=ci==0?1:ss(p);else if(i==ci-1)o=1-ss(p);
+    k.bg.style.opacity=o;const d=t*.02+i;k.bg.style.transform=`translate(${Math.sin(d*1.3)*40}px,${Math.cos(d)*40}px) scale(${1.04+.03*Math.sin(d*.7)})`;});
+  $('#flash').style.opacity=sh*.16*(0.6+.4*Math.abs(noise(t,1)));
+  // heroes
+  const shx=sh*noise(t,3)*9, shy=sh*noise(t,7)*7;
+  T.forEach((k,i)=>{const h=k.hero;let x=0,r=0,s=1,o=1;
+    if(i==ci){if(ci>0){const e=spring(p*1.05);x=(1-e)*1120;r=(1-e)*7;s=mix(.9,1,eo(p))}
+      const intro=ci==0?back(cl(t/.7)):1; s*=mix(.86,1,intro); o=ci==0?cl(t/.18):1;}
+    else if(i==ci-1){const e=eio(cl(p*1.5));x=-e*1150;r=-e*8;s=1-.12*e;o=1-cl((p-.6)*4)}
+    else o=0;
+    s*=1+sh*.025; o*=1-out;
+    h.style.opacity=o;h.style.transform=`translate(${x+shx}px,${shy-out*60}px) rotate(${r}deg) scale(${s*(1-out*.08)})`;
+    const lt=cl((t-k.start)/((T[i+1]?T[i+1].start:D.total)-k.start));
+    k.ph.style.transform=`scale(${1.04+.13*lt}) translate(${mix(-1.2,1.2,lt)}%,${mix(.8,-.8,lt)}%)`;
+    k.mini.style.opacity=i<ci?0:(i==ci?(ci==0?1:ss(p*1.6)):0);
+  });
+  // pills
+  const rollK=ci>0?ci-1+spring(p*1.1):0; $('#rollIn').style.transform=`translateY(${-64*rollK}px)`;
+  const pin=back(cl((t-.15)/.5));
+  $('#num').style.transform=`scale(${mix(.6,1,pin)*(1+.18*Math.sin(Math.PI*cl(p*1.4))*(ci>0?1:0))})`;$('#num').style.opacity=cl((t-.15)/.2)*(1-out);
+  const pl=$('#place'); if(pl.dataset.i!=ci){pl.dataset.i=ci;pl.textContent=T[ci].place}
+  const pp=ci>0?p:cl((t-.3)/.5); pl.style.opacity=ss(pp*1.6)*(1-out); pl.style.transform=`translateX(${(1-eo(pp))*60}px)`;
+  // stamp
+  let st=null;L.forEach(l=>{if(l.stamp&&l.track==ci&&t>=(l.instant?l.start+.05:l.end-.35)&&t<l.end+(l.instant?1.2:2.1))st=l});
+  const se=$('#stamp');
+  if(st&&!out){const a=t-(st.instant?st.start+.05:st.end-.35),k=cl(a/.22),o=1-cl((a-2.1)/.3);
+    if(se.dataset.s!=st.stamp){se.dataset.s=st.stamp;se.textContent=st.stamp}
+    const sc=mix(2.4,1,eo(k))*(1+.05*Math.exp(-a*6)*Math.sin(a*40));
+    se.style.opacity=cl(k*3)*cl(o);se.style.transform=`rotate(${-5+2*Math.exp(-a*5)*Math.sin(a*30)}deg) scale(${sc})`;
+  } else se.style.opacity=0;
+  // titles (per-letter rise)
+  T.forEach((k,i)=>{const sp=[...k.ttl.children];sp.forEach((c,j)=>{let y=0,o=0;
+    if(i==ci){const a=ci==0?t-.2:t-k.start-.18;const e=back(cl((a-j*.022)/.42));y=(1-e)*74;o=cl((a-j*.022)/.15)}
+    else if(i==ci-1){const a=t-T[ci].start;const e=eio(cl((a-j*.012)/.3));y=-e*74;o=1-e}
+    c.style.transform=`translateY(${y}px)`;c.style.opacity=o});});
+  const pt=$('#pTitle'); if(pt.dataset.i!=ci){pt.dataset.i=ci;pt.textContent=T[ci].title}
+  pt.style.opacity=ci>0?ss(p*1.5):1;
+  // lyrics
+  let ai=0;L.forEach((l,i)=>{if(t>=l.start-.12)ai=i});
+  const SC=.5,a0=cl((t-(L[ai].start-.12))/SC),prevY=ai>0?L[ai-1].y:L[0].y;
+  const sy=mix(prevY,L[ai].y,ai>0?spring(a0):1);
+  $('#lyrIn').style.transform=`translateY(${52-sy}px)`;
+  L.forEach((l,i)=>{const d=i-ai;let o,sc,bl;
+    const act=i==ai?ss(a0*1.6):(i==ai-1?1-ss(a0*1.6):0);
+    const base=d<0?.16:(d==0?.42:(d==1?.36:(d==2?.24:.14)));
+    o=mix(base,1,act); sc=mix(.93,1,act); bl=mix(d==0?0:1.6,0,act);
+    if(Math.abs(d)>5){l.el.style.opacity=0;return}
+    let tx=0,ty=0; if(l.shout&&i==ai){sc*=1.03+.015*noise(t,5);tx=noise(t,11)*5;ty=noise(t,13)*4}
+    l.el.style.opacity=o;l.el.style.filter=bl>.05?`blur(${bl.toFixed(2)}px)`:'none';
+    l.el.style.transform=`translate(${tx}px,${ty}px) scale(${sc})`;
+    l.sp.forEach((s,j)=>{const w=l.words[j];const k=i<ai?1:(i>ai?0:cl((t-w.s+.04)/.13));
+      const hi=l.shout?[255,59,59]:[255,255,255];
+      const al=i==ai?mix(.4,1,k):1;
+      s.style.color=l.shout&&i==ai?`rgba(${hi[0]},${mix(160,59,k)|0},${mix(160,59,k)|0},${al})`:`rgba(255,255,255,${al})`;
+      const pop=i==ai?Math.sin(Math.PI*cl((t-w.s+.04)/.26)):0;
+      s.style.transform=`translateY(${-5*pop}px)`;});
+  });
+  // player
+  const pr=cl(t/D.total); $('#fill').style.width=(pr*100)+'%';$('#knob').style.left=(pr*100)+'%';
+  const f=x=>{x=Math.max(0,Math.floor(x));return Math.floor(x/60)+':'+String(x%60).padStart(2,'0')};
+  $('#tm').textContent=f(t)+' / -'+f(D.total-t);
+  let amp=.55; if(D.env){const k=Math.min(D.env.length-1,Math.floor(t*30));amp=D.env[k]}
+  [...$('#eq').children].forEach((b,j)=>{const v=D.env?amp*(.55+.45*Math.abs(noise(t*1.7,j*3.1))):(.35+.65*Math.abs(noise(t*.9,j*2.7)))*amp*1.3;b.style.height=(8+36*cl(v))+'px'});
+  const pi=back(cl((t-.1)/.6)); $('#player').style.transform=`translateY(${(1-pi)*90}px) scale(${1+sh*.012})`;$('#player').style.opacity=cl(t/.25);
+  $('#meta').style.opacity=cl((t-.1)/.3);
+  // outro cards
+  T.forEach((k,i)=>{const a=t-D.outroStart-.18-(i-1)*.14;const e=spring(cl(a/.7));
+    k.oc.style.opacity=cl(a/.15);k.oc.style.transform=`translateY(${(1-e)*240}px) rotate(${(i-2)*2.5*e}deg) scale(${mix(.8,1,eo(cl(a/.5)))})`;});
+  if(out>0){$('#place').style.opacity=0}
+};
+init();
+</script></body></html>
