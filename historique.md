@@ -6,3 +6,6 @@
 - 2026-11-13 — Faux gyrophare (A13 près de Rouen, un homme de 23 ans en treillis roule avec gyrophare bleu et sirène depuis son téléphone pour éviter les bouchons, intercepté, 12/11/2026)
 - 2026-11-13 — Tom et Jerry (Merville/Toulouse, un transporteur envoie aux policiers municipaux un dessin de Tom et Jerry après une embrouille, jugé pour outrage le 13/11/2026)
 - 2026-11-13 — Papi bourré (Peyia, Chypre, un homme de 69 ans convoqué pour une plainte arrive au commissariat en voiture ivre et se gare sur le parking, arrêté, 4/11/2026)
+- 2026-11-14 — Fossé douillet (Bergerac, conducteur ivre qui abandonne sa voiture accidentée et s'endort dans le fossé 200 m plus loin, 10/11/2026)
+- 2026-11-14 — Pneus policiers (Heidelberg, Allemagne, un homme de 37 ans tente de dégonfler un pneu de voiture de police devant une patrouille, mandat d'arrêt découvert, 12/11/2026)
+- 2026-11-14 — Caca fatal (Coulounieix-Chamiers près de Périgueux, un homme surpris par un chien en faisant ses besoins abandonne une sacoche de bijoux, condamné à 12 mois pour recel, 7/11/2026)
