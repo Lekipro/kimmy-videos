@@ -83,7 +83,7 @@ def align(script, wav, out):
 def mix(vwav, mwav, dur, out):
     dur = float(dur)
     flt = (f"[0]aformat=sample_fmts=fltp:sample_rates=44100:channel_layouts=stereo,apad=whole_dur={dur},asplit=2[v][sc];"
-           f"[1]aformat=sample_fmts=fltp:sample_rates=44100:channel_layouts=stereo,atrim=0:{dur},volume=-12dB,"
+           f"[1]aformat=sample_fmts=fltp:sample_rates=44100:channel_layouts=stereo,atrim=0:{dur},volume=-9dB,"
            f"afade=t=in:d=0.6,afade=t=out:st={dur - 1.7}:d=1.7[m];"
            "[m][sc]sidechaincompress=threshold=0.03:ratio=3:attack=30:release=450:makeup=1[md];"
            "[v][md]amix=inputs=2:normalize=0:duration=first,volume=5.5dB,"

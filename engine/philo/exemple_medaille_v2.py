@@ -1,4 +1,4 @@
-"""EXEMPLE STYLE V2 — vidéo du 19/11 « Mieux vaut finir 3e » (médaille d'argent, 69,5 s).
+"""EXEMPLE STYLE V2+V3 — vidéo du 19/11 « Mieux vaut finir 3e » (médaille d'argent, 69,5 s). Personnages : person(..., pose="sad|joy|look_up|look_down|walk|think|point", look=-1..1, k=0..1).
 Titre court via HOOK (en bas du fichier), animations qui démarrent au drop (1,5 s), aucun mot dans les scènes."""
 from hp_engine_v2 import *
 
@@ -43,33 +43,15 @@ def medal(ctx, x, y, r, a=1.0, fill=0.0, ribbon=True):
         ctx.new_path(); ctx.arc(x, y, r * 0.72, 0, 2 * math.pi); ctx.fill()
 
 
-def athlete(ctx, x, y, s=1.0, a=1.0, mood=0.0, medal_a=0.0, glow=0.0):
-    """mood > 0 : bras levés ; mood < 0 : tête baissée, épaules tombantes."""
+def athlete(ctx, x, y, s=1.0, a=1.0, mood=0.0, medal_a=0.0, glow=0.0, look=0.0, pose=None):
+    """mood > 0 : joie (bras levés, petits sauts) ; mood < 0 : tristesse (tête basse, épaules tombantes)."""
     if a <= 0:
         return
-    droop = max(0, -mood)
-    if droop <= 0:
-        person(ctx, x, y, s, a)
+    if pose is None:
+        pose, k = ("joy", mood) if mood > 0 else (("sad", -mood) if mood < 0 else ("stand", 0))
     else:
-        white(ctx, a)
-        ctx.new_path()
-        ctx.arc(x + 7 * s * droop, y - 58 * s + 10 * s * droop, 12 * s, 0, 2 * math.pi)
-        ctx.fill()
-        r = 15 * s
-        l, rr, top, bot = x - 20 * s, x + 20 * s, y - 40 * s + 4 * s * droop, y
-        ctx.new_path()
-        ctx.move_to(l, bot)
-        ctx.line_to(l, top + r)
-        ctx.arc(l + r, top + r, r, math.pi, 1.5 * math.pi)
-        ctx.arc(rr - r, top + r, r, 1.5 * math.pi, 2 * math.pi)
-        ctx.line_to(rr, bot)
-        ctx.close_path()
-        ctx.fill()
-    up = max(0, mood)
-    if up > 0:
-        for side in (-1, 1):
-            sx, sy = x + side * 18 * s, y - 34 * s
-            polyline(ctx, [(sx, sy), (sx + side * 22 * s, sy - 30 * s * up), (sx + side * 26 * s, sy - 58 * s * up)], 1, 6 * s, a)
+        k = 1.0
+    person(ctx, x, y, s, a, pose=pose, look=look, k=k)
     if medal_a > 0:
         medal(ctx, x, y - 22 * s, 7 * s, medal_a, 1.0, ribbon=False)
     if glow > 0:
@@ -167,7 +149,7 @@ def s3(ctx, t, d):  # 1995 : trois psychologues revoient les images de Barcelone
         polyline(ctx, [(sx - sw / 2 + 20, sy + sh / 2 - 18), (px, sy + sh / 2 - 18)], 1, 3, 0.8 * sa)
     label(ctx, "BARCELONE 1992", sx, sy - sh / 2 - 22, 16, 0.75 * A(t, 4.0, 4.5))
     for i, x in enumerate([400, 540, 680]):
-        person(ctx, x, 1420, 1.15, A(t, 0.9 + 0.2 * i, 1.3 + 0.2 * i))
+        person(ctx, x, 1420, 1.15, A(t, 0.9 + 0.2 * i, 1.3 + 0.2 * i), pose="look_up")
 
 
 def s4(ctx, t, d):  # noter les visages, de l'agonie à l'extase
@@ -208,7 +190,7 @@ def s5(ctx, t, d):  # résultat : bronze plus heureux que l'argent
 
 def s6(ctx, t, d):  # relance : là que ça devient intéressant
     x, y = 540, 1330
-    athlete(ctx, x, y, 1.6, A(t, 0, 0.4), -1, 1)
+    athlete(ctx, x, y, 1.6, A(t, 0, 0.4), -1, 1, pose="think")
     q = A(t, 0.4, 0.9)
     pulse = 1 + 0.12 * math.sin(t * 4)
     ctx.select_font_face(SERIF, cairo.FONT_SLANT_ITALIC, cairo.FONT_WEIGHT_NORMAL)
@@ -225,7 +207,7 @@ def s7(ctx, t, d):  # le deuxième regarde le premier : j'y étais presque
     podium(ctx, 1, 1, 0.6)
     x1, y1 = top_of(1); x2, y2 = top_of(2); x3, y3 = top_of(3)
     athlete(ctx, x1, y1 - 3, 1.2, 1, 0.6, 1, A(t, 1.6, 2.4))
-    athlete(ctx, x2, y2 - 3, 1.2, 1, -1, 1)
+    athlete(ctx, x2, y2 - 3, 1.2, 1, 0, 1, pose="look_up" if t < 3.6 else "sad", look=1)
     athlete(ctx, x3, y3 - 3, 1.2, 0.35 * (1 - A(t, 0.2, 1.2)) + 0.25, 0, 0.3)
     # regard vers le premier : flèche pointillée
     arrow(ctx, (x2 + 30, y2 - 110), (x1 - 50, y1 - 110), A(t, 1.0, 2.0), 2.5, 0.8, dash=[6, 8])
@@ -244,10 +226,10 @@ def s8(ctx, t, d):  # le troisième regarde vers le bas : sans rien
     x1, y1 = top_of(1); x2, y2 = top_of(2); x3, y3 = top_of(3)
     athlete(ctx, x1, y1 - 3, 1.2, 0.3, 0.6, 0.3)
     athlete(ctx, x2, y2 - 3, 1.2, 0.3, -1, 0.3)
-    athlete(ctx, x3, y3 - 3, 1.2, 1, 0.9 * A(t, 2.6, 3.2), 1, A(t, 3.0, 4.0))
+    athlete(ctx, x3, y3 - 3, 1.2, 1, 0.9 * A(t, 2.6, 3.2), 1, A(t, 3.0, 4.0), look=1, pose="look_down" if t < 2.6 else None)
     # au pied du podium : la 4e place, les mains vides
     fx = 905
-    person(ctx, fx, BASE - 3, 1.0, 0.7 * A(t, 0.4, 0.9))
+    person(ctx, fx, BASE - 3, 1.0, 0.7 * A(t, 0.4, 0.9), pose="sad", look=-1)
     label(ctx, "4", fx, BASE + 50, 20, 0.6 * A(t, 0.6, 1.0), spacing=0)
     arrow(ctx, (x3 + 40, y3 - 80), (fx - 20, BASE - 120), A(t, 0.6, 1.6), 2.5, 0.8, dash=[6, 8])
     ba = A(t, 2.0, 2.6)
@@ -307,7 +289,7 @@ def s11(ctx, t, d):  # viser plus haut... la marche au-dessus ne suffit jamais
     k = clamp((t - 1.0) / (d - 2.0))
     step = min(n - 1, int(k * n))
     sx, sy = pts[1 + 2 * step]
-    person(ctx, sx - 48, sy - 3, 0.95, A(t, 0.3, 0.7))
+    person(ctx, sx - 48, sy - 3, 0.95, A(t, 0.3, 0.7), pose="walk", look=1)
     # la marche au-dessus brille toujours
     nx, ny = pts[min(len(pts) - 1, 1 + 2 * (step + 1))]
     glowdot(ctx, nx - 48, ny - 30, 70, 0.45 * A(t, 0.8, 1.2))
@@ -320,7 +302,7 @@ def s11(ctx, t, d):  # viser plus haut... la marche au-dessus ne suffit jamais
 
 def s12(ctx, t, d):  # à qui je me compare ?
     x, y = 540, 1240
-    person(ctx, x, y, 1.4, A(t, 0, 0.4))
+    person(ctx, x, y, 1.4, A(t, 0, 0.4), pose="look_up" if t < 3.0 else "look_down")
     # au-dessus : une rangée de gens ; en dessous : une autre
     for i in range(7):
         xi = 180 + i * 120
@@ -343,7 +325,7 @@ def s13(ctx, t, d):  # défi : regarde une fois vers le bas, d'où tu es parti
     pts = stairs_pts(n, x0=130, y0=1400, dx=130, dy=82)
     polyline(ctx, pts, 1, 3.5, 1)
     tx, ty = pts[-1]
-    person(ctx, tx - 50, ty - 3, 1.0, A(t, 0, 0.4))
+    person(ctx, tx - 50, ty - 3, 1.0, A(t, 0, 0.4), pose="look_down", look=-1, k=A(t, 0.6, 1.2))
     # regard vers le bas : chemin pointillé qui redescend jusqu'au départ
     path = [(pts[i][0] - 30, pts[i][1] - 30) for i in range(len(pts) - 1, -1, -2)]
     polyline(ctx, path, A(t, 0.8, 3.0), 2.5, 0.75, dash=[6, 8])
@@ -359,7 +341,7 @@ def s14(ctx, t, d):  # boucle : le podium, l'argent relève la tête, la médail
     athlete(ctx, x1, y1 - 3, 1.2, A(t, 0.1, 0.5), 0.6, 1)
     athlete(ctx, x3, y3 - 3, 1.2, A(t, 0.1, 0.5), 0.9, 1)
     lift = A(t, 1.4, 2.6)
-    athlete(ctx, x2, y2 - 3, 1.2, A(t, 0.1, 0.5), lerp(-1, 0.0, lift), 1)
+    athlete(ctx, x2, y2 - 3, 1.2, A(t, 0.1, 0.5), lerp(-1, 0.8, lift), 1)
     b = A(t, 2.2, 3.8)
     medal(ctx, x2, y2 - 3 - 22 * 1.2, 7 * 1.2, 1, 1, ribbon=False)
     glowdot(ctx, x2, y2 - 60, 320 * b + 1, 0.45 * b)

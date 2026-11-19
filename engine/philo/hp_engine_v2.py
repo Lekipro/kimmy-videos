@@ -1,4 +1,4 @@
-"""Moteur de rendu v2 (19/11/2026) : titre court seul au début, pas de sous-titres, pas de mots dans les scènes.\nMoteur de rendu « animation minimaliste » (fond noir, traits blancs lumineux, sous-titres mot à mot).
+"""Moteur de rendu v3 (19/11/2026) : cadrage auto qui remplit l'écran + personnages expressifs (poses, regard, respiration).\nv2 : titre court seul au début : titre court seul au début, pas de sous-titres, pas de mots dans les scènes.\nMoteur de rendu « animation minimaliste » (fond noir, traits blancs lumineux, sous-titres mot à mot).
 Usage :
   python3 hp_engine.py still  scenes.py phrases.json DUREE t1 t2 ...   -> still_XX.jpg
   python3 hp_engine.py video  scenes.py phrases.json DUREE part nparts out.mp4
@@ -66,24 +66,81 @@ def polyline(ctx, pts, prog=1.0, width=3.0, a=1.0, dash=None):
 def curve_pts(f, x0, x1, n=80):
     return [(lerp(x0, x1, i / n), f(i / n)) for i in range(n + 1)]
 
-def person(ctx, x, y, s=1.0, a=1.0, dy=0.0):
-    if a <= 0:
+CUR_T = [0.0]  # temps global (respiration des personnages)
+
+def _limb(ctx, pts, w, a):
+    white(ctx, a)
+    ctx.new_path(); ctx.move_to(*pts[0])
+    for p in pts[1:]:
+        ctx.line_to(*p)
+    ctx.set_line_width(w); ctx.set_line_cap(cairo.LINE_CAP_ROUND); ctx.set_line_join(cairo.LINE_JOIN_ROUND)
+    ctx.stroke()
+
+def person(ctx, x, y, s=1.0, a=1.0, dy=0.0, pose="stand", look=0.0, k=1.0):
+    """Personnage v3. pose : stand, sad, joy, look_up, look_down, walk, think, point.
+    look : direction du regard (-1 gauche, +1 droite). k : intensité de la pose (0 -> stand, 1 -> pose complète)."""
+    if a <= 0 or s <= 0:
         return
     y = y + dy
+    T = CUR_T[0]
+    ph = (x * 0.013) % 6.28
+    breath = 0.012 * math.sin(T * 2.2 + ph)
+    sad = k if pose == "sad" else 0.0
+    joy = k if pose == "joy" else 0.0
+    up = k if pose == "look_up" else 0.0
+    down = k if pose in ("look_down", "think") else 0.0
+    walk = k if pose == "walk" else 0.0
+    hop = joy * abs(math.sin(T * 6 + ph)) * 10 * s
+    y -= hop
+    bob = walk * abs(math.sin(T * 7 + ph)) * 4 * s
+    y -= bob
+    # corps
+    r = 15 * s
+    top_y = y - (40 + 40 * breath) * s + 5 * s * sad
+    l, rr, bot = x - 20 * s, x + 20 * s, y
+    lean = 6 * s * sad
     white(ctx, a)
     ctx.new_path()
-    ctx.arc(x, y - 58 * s, 12 * s, 0, 2 * math.pi)
-    ctx.fill()
-    r = 15 * s
-    l, rr, top, bot = x - 20 * s, x + 20 * s, y - 40 * s, y
-    ctx.new_path()
     ctx.move_to(l, bot)
-    ctx.line_to(l, top + r)
-    ctx.arc(l + r, top + r, r, math.pi, 1.5 * math.pi)
-    ctx.arc(rr - r, top + r, r, 1.5 * math.pi, 2 * math.pi)
+    ctx.line_to(l + lean * 0.3, top_y + r)
+    ctx.arc(l + lean * 0.3 + r, top_y + r, r, math.pi, 1.5 * math.pi)
+    ctx.arc(rr + lean * 0.3 - r, top_y + r, r, 1.5 * math.pi, 2 * math.pi)
     ctx.line_to(rr, bot)
-    ctx.close_path()
-    ctx.fill()
+    ctx.close_path(); ctx.fill()
+    # tête
+    hx = x + look * 3 * s + 8 * s * sad + lean * 0.4
+    hy = top_y - 18 * s + 11 * s * sad + 5 * s * down - 4 * s * up
+    white(ctx, a)
+    ctx.new_path(); ctx.arc(hx, hy, 12 * s, 0, 2 * math.pi); ctx.fill()
+    # yeux (petits traits sombres) : donnent la direction du regard
+    if s >= 0.8:
+        ex = look * 4 * s + 2 * s * sad
+        ey = -1.5 * s - 4 * s * up + 4 * s * (down + sad)
+        ctx.set_source_rgba(0, 0, 0, a)
+        for side in (-1, 1):
+            ctx.new_path(); ctx.arc(hx + ex + side * 4.2 * s, hy + ey, 1.7 * s, 0, 2 * math.pi); ctx.fill()
+    # bras
+    w = 7 * s
+    shy = top_y + 10 * s
+    for side in (-1, 1):
+        sx = x + side * 19 * s + lean * 0.3
+        if joy > 0:
+            wav = math.sin(T * 6 + ph + side) * 6 * s
+            _limb(ctx, [(sx, shy), (sx + side * 20 * s, shy - 26 * s * joy), (sx + side * 24 * s + wav, shy - 54 * s * joy)], w, a)
+        elif pose == "point" and side == (1 if look >= 0 else -1):
+            _limb(ctx, [(sx, shy), (sx + side * 30 * s * k, shy - 14 * s * k), (sx + side * 55 * s * k, shy - 24 * s * k)], w, a)
+        elif pose == "think" and side == 1:
+            _limb(ctx, [(sx, shy), (sx + 8 * s, shy + 14 * s), (hx + 6 * s, hy + 13 * s)], w, a)
+        elif walk > 0:
+            sw = math.sin(T * 7 + ph + (0 if side > 0 else math.pi)) * 10 * s * walk
+            _limb(ctx, [(sx, shy), (sx + side * 3 * s + sw, shy + 30 * s)], w, a)
+        elif sad > 0:
+            _limb(ctx, [(sx, shy + 4 * s * sad), (sx + side * 2 * s, shy + 34 * s)], w, a)
+    # jambes qui marchent
+    if walk > 0:
+        for side in (-1, 1):
+            sw = math.sin(T * 7 + ph + (0 if side > 0 else math.pi)) * 9 * s * walk
+            _limb(ctx, [(x + side * 8 * s, y - 2 * s), (x + side * 8 * s + sw, y + 14 * s)], 9 * s, a)
 
 def pot_path(ctx):
     ctx.new_path()
@@ -315,14 +372,48 @@ def glow(img, k1=0.9, k2=0.55):
     g = cv2.resize(g1 * k1 + g2 * k2, (W, H), interpolation=cv2.INTER_LINEAR)
     return img + g
 
+FRAME = {}  # cadrage calculé une fois par scène : (échelle, dx, dy)
+
+def scene_frame(idx):
+    """Mesure où la scène dessine (quelques instants échantillonnés) et calcule le zoom/décalage
+    qui la centre et la grossit pour remplir l'écran (zone utile x 70-1010, y 520-1480)."""
+    if idx in FRAME:
+        return FRAME[idx]
+    s, e, fn = SCENES[idx]
+    k = 0.25
+    acc = None
+    keep = CUR_T[0]
+    for u in (0.15, 0.35, 0.55, 0.75, 0.95):
+        lt = (e - s) * u
+        CUR_T[0] = s + lt
+        surf = cairo.ImageSurface(cairo.FORMAT_ARGB32, int(W * k), int(H * k))
+        c = cairo.Context(surf); c.scale(k, k)
+        fn(c, lt, e - s)
+        al = np.ndarray((surf.get_height(), surf.get_width(), 4), np.uint8, surf.get_data())[..., 3]
+        acc = al > 70 if acc is None else (acc | (al > 70))
+    CUR_T[0] = keep
+    ys, xs = np.nonzero(acc)
+    if len(xs) == 0:
+        FRAME[idx] = (1.0, 0.0, 0.0); return FRAME[idx]
+    x0, x1 = xs.min() / k, (xs.max() + 1) / k
+    y0, y1 = ys.min() / k, (ys.max() + 1) / k
+    top = 820 if s < HOOK.get("end", 0) else 520
+    tx0, tx1, ty0, ty1 = 70, 1010, top, 1480
+    sc = min((tx1 - tx0) / max(x1 - x0, 1), (ty1 - ty0) / max(y1 - y0, 1), 1.7) / 1.035
+    sc = max(sc, 0.85)
+    cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
+    FRAME[idx] = (sc, (tx0 + tx1) / 2 - cx, (ty0 + ty1) / 2 - cy)
+    return FRAME[idx]
+
 def render(T, grain_rng):
+    CUR_T[0] = T
     surf = cairo.ImageSurface(cairo.FORMAT_ARGB32, W, H)
     ctx = cairo.Context(surf)
     ctx.set_antialias(cairo.ANTIALIAS_BEST)
     for (x, y, r, a, ph) in STARS:
         white(ctx, a * (0.6 + 0.4 * math.sin(T * 0.8 + ph)))
         ctx.arc(x, y - T * 2.0, r, 0, 2 * math.pi); ctx.fill()
-    for (s, e, fn) in SCENES:
+    for si, (s, e, fn) in enumerate(SCENES):
         if s - XF / 2 <= T <= e + XF / 2:
             a = A(T, s - XF / 2, s + XF / 2) if s > 0 else 1.0
             if e < DUR:
@@ -330,9 +421,11 @@ def render(T, grain_rng):
             if a <= 0:
                 continue
             lt = T - s
-            z = 1.1 + 0.035 * (lt / (e - s))
+            sc, ox, oy = scene_frame(si)
+            z = sc * (1.0 + 0.035 * (lt / (e - s)))
             ctx.save()
-            ctx.translate(CX, CY); ctx.scale(z, z); ctx.translate(-CX, -CY)
+            tcx, tcy = 540, (820 if s < HOOK.get("end", 0) else 520) / 2 + 740
+            ctx.translate(tcx, tcy); ctx.scale(z, z); ctx.translate(-(tcx - ox), -(tcy - oy))
             ctx.push_group()
             fn(ctx, lt, e - s)
             ctx.pop_group_to_source()
